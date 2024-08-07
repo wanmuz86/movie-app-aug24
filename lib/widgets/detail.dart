@@ -45,10 +45,20 @@ class _DetailPageState extends State<DetailPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text("Detail Page"),),
-      body: _movie == null ?   Center(child: CircularProgressIndicator()) : Column(
-        children: [
-          Text(_movie!.title),
-        ],
+      body: _movie == null ?   Center(child: CircularProgressIndicator()) : SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Text(_movie!.title),
+              Text(_movie!.year),
+              Image.network(_movie!.poster),
+              Text(_movie!.released),
+              Text(_movie!.writer),
+              Text(_movie!.actors),
+              Text(_movie!.plot , textAlign: TextAlign.center,)
+            ],
+          ),
+        ),
       ),
     );
   }
