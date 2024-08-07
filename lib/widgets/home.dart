@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:movie_app/widgets/detail.dart';
 
 import '../models/movie_search.dart';
 import 'package:http/http.dart' as http;
@@ -13,6 +14,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  var searchEditingController = TextEditingController();
+
   // By removing the mock data, the data type becomes List<MovieSearch>
   var _movies = [
     // {
@@ -111,12 +115,18 @@ class _HomePageState extends State<HomePage> {
                 flex:2,
                 child: TextField(
                   decoration: InputDecoration(hintText: "Enter movie to search"),
+                  controller: searchEditingController,
                 ),
               ),
               Expanded(
                   child: ElevatedButton(onPressed: () {
                     // Call the API, then, the response will be movies
-                    fetchMovies().then((movies){
+                    // When we work with asynchronous function
+
+                    // - var movies = await fetchMovies(searchEditingController.text)
+                    // - fetchMovies().then()
+
+                    fetchMovies(searchEditingController.text).then((movies){
                       setState(() {
                         _movies = movies;
                       });
@@ -135,7 +145,13 @@ class _HomePageState extends State<HomePage> {
                       subtitle: Text(_movies[index].year),
                       leading: Image.network(_movies[index].poster),
                       trailing: Icon(Icons.chevron_right),
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context)=>DetailPage(imdbId: _movies[index].imdbId,))
+                        );
+                        
+                      },
                     ),
                   );
                 }),
@@ -151,9 +167,9 @@ class _HomePageState extends State<HomePage> {
   // If you are working with an object {} -> Return type will be <ClassName>
   // If you are working with an array [] -> Return type will be List<ClassName>
 
-  Future<List<MovieSearch>> fetchMovies() async {
+  Future<List<MovieSearch>> fetchMovies(searchText) async {
     final response = await http
-        .get(Uri.parse('https://www.omdbapi.com/?s=Harry&apikey=87d10179'));
+        .get(Uri.parse('https://www.omdbapi.com/?s=$searchText&apikey=87d10179'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
